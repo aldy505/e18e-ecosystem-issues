@@ -76,11 +76,19 @@ jobs:
       - name: Run Fuzzyma's tool
         shell: bash
         run: |
-          output=()
+          output=("<!-- e18e-dependents-marker -->")
           for package in "${{ steps.package_name.outputs.packages }}"; do
             echo "Running for $package"
             output+=("### $package")
             output+=("$(npx --yes github:Fuzzyma/e18e-tools $package -n 20 -q -o md -U https://npm.devminer.xyz/registry)")
           done
 
-          gh issue comment ${{ github.event.pull_request.number }} --body "${output[*]}"
+          # Do we have existing comment that contains the marker?
+          existing_comment=$(gh issue comment ${{ github.event.pull_request.number }} --json body)
+          if echo "$existing_comment" | grep -q "<!-- e18e-dependents-marker -->"; then
+            # Update the existing comment
+            gh issue comment ${{ github.event.pull_request.number }} --body "${output[*]}" --edit-last
+          else
+            # Create a new comment
+            gh issue comment ${{ github.event.pull_request.number }} --body "${output[*]}"
+          fi
