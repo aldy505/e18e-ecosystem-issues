@@ -1,4 +1,4 @@
-name: Package Dependends Trigger
+name: Package Dependents Trigger
 
 on:
   pull_request_target:
@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  comment-package-dependends-on-issue:
-    name: Comment package dependends on issue
+  comment-package-dependents-on-issue:
+    name: Comment package dependents on issue
     runs-on: ubuntu-latest
     if: "${{ (github.event.action != 'labeled' || github.event.label.name == 'Trigger: Find Dependents') && github.repository_owner == 'e18e' }}"
     steps:
